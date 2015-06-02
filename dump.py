@@ -3,7 +3,7 @@
 import os
 import sys
 
-from boto.swf.layer1 import Layer1
+from swf.querysets import domain
 from boto.swf import regions
 import yaml
 
@@ -11,6 +11,11 @@ import yaml
 Here are the typical structures of domains, workflow types and activity types,
 as returned by "describe_*" methods of the boto.swf API, represented as Python
 objects dumps.
+
+NB: this is *not* what you will find in the serialized version as we now use
+simple-workflow and it re-maps all those attributes to a flatter structure.
+
+TODO: document attributes in the new simple-workflow format
 
 Domain:
 
@@ -68,8 +73,8 @@ Activity Type:
     }
 
 """
+
 #parameters through environment
-STATUS = os.getenv("SWF_REGISTRATION_STATUS", "REGISTERED")
 REGION = os.getenv("SWF_REGION", "us-east-1")
 DEBUG = os.getenv("DEBUG", False)
 
@@ -78,45 +83,46 @@ def debug(msg):
     if DEBUG:
         sys.stderr.write("DEBUG: {}\n".format(msg))
 
-#find region to connect to
-try:
-    region_object = filter(lambda r: r.name == REGION, regions())[0]
-except IndexError:
-    sys.stderr.write("Error: unable to find region named '{}', exiting.\n".format(REGION))
-    sys.exit(1)
 
 #real work against SWF API
-swf = Layer1(region=region_object)
 result = []
 
-domains = swf.list_domains(registration_status=STATUS)
-for hsh in domains["domainInfos"]:
-    domain_name = hsh["name"]
-    domain = swf.describe_domain(domain_name)
-    debug("Domain: {}".format(domain))
-    domain_result = domain.copy()
-    domain_result["workflowTypes"] = []
-    domain_result["activityTypes"] = []
+for domain in domain.DomainQuerySet(region=REGION).all():
+    debug(domain)
+    domain_result = {
+        "name": domain.name,
+        "status": domain.status,
+        "retention_period": domain.retention_period,
+    }
+    domain_result["workflows"] = []
+    domain_result["activities"] = []
     #workflows
-    workflow_types = swf.list_workflow_types(domain_name, registration_status=STATUS)
-    for hsh in workflow_types["typeInfos"]:
-        workflow_type = swf.describe_workflow_type(
-            domain_name,
-            hsh["workflowType"]["name"],
-            hsh["workflowType"]["version"],
-        )
-        domain_result["workflowTypes"].append(workflow_type.copy())
-        debug("  Workflow Type: {}".format(workflow_type))
+    for workflow_type in domain.workflows():
+        debug(workflow_type)
+        domain_result["workflows"].append({
+            "execution_timeout": workflow_type.execution_timeout,
+            "decision_tasks_timeout": workflow_type.decision_tasks_timeout,
+            "task_list": workflow_type.task_list,
+            "child_policy": workflow_type.child_policy,
+            "status": workflow_type.status,
+            "creation_date": workflow_type.creation_date,
+            "version": workflow_type.version,
+            "name": workflow_type.name,
+        })
     #activities
-    activity_types = swf.list_activity_types(domain_name, registration_status=STATUS)
-    for hsh in activity_types["typeInfos"]:
-        activity_type = swf.describe_activity_type(
-            domain_name,
-            hsh["activityType"]["name"],
-            hsh["activityType"]["version"],
-        )
-        domain_result["activityTypes"].append(activity_type.copy())
-        debug("  Activity Type: {}".format(activity_type))
+    for activity_type in domain.activities():
+        debug(activity_type)
+        domain_result["activities"].append({
+            "task_schedule_to_start_timeout": activity_type.task_schedule_to_start_timeout,
+            "task_schedule_to_close_timeout": activity_type.task_schedule_to_close_timeout,
+            "task_start_to_close_timeout": activity_type.task_start_to_close_timeout,
+            "task_list": activity_type.task_list,
+            "task_heartbeat_timeout": activity_type.task_heartbeat_timeout,
+            "status": activity_type.status,
+            "creation_date": activity_type.creation_date,
+            "version": activity_type.version,
+            "name": activity_type.name,
+        })
     #wrap up
     result.append(domain_result)
 

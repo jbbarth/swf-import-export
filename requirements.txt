@@ -1,2 +1,5 @@
 PyYAML==3.11
 boto==2.38.0
+mock==1.0.1
+simple-workflow==0.1.47
+xworkflows==1.0.0
