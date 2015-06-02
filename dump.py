@@ -14,8 +14,6 @@ objects dumps.
 NB: this is *not* what you will find in the serialized version as we now use
 simple-workflow and it re-maps all those attributes to a flatter structure.
 
-TODO: document attributes in the new simple-workflow format
-
 Domain:
 
     {
@@ -26,6 +24,14 @@ Domain:
         u'configuration': {
             u'workflowExecutionRetentionPeriodInDays': u'30'
         }
+    }
+
+Corresponding structure in simple-workflow / this project:
+
+    {
+        "status": "REGISTERED",
+        "name": "TestDomain",
+        "retention_period": 30
     }
 
 Workflow Type:
@@ -49,16 +55,29 @@ Workflow Type:
         }
     }
 
+Corresponding structure in simple-workflow / this project:
+
+    {
+        "execution_timeout": 3600,
+        "decision_tasks_timeout": 30,
+        "task_list": {"name": "test"},
+        "child_policy": "TERMINATE",
+        "status": "REGISTERED",
+        "creation_date": 1389710910.635,
+        "version": "1.0",
+        "name": "GreeterWorkflow.greet"
+    }
+
 Activity Type:
 
     {
         u'configuration': {
-            u'defaultTaskStartToCloseTimeout': u'0',
-            u'defaultTaskScheduleToStartTimeout': u'0',
+            u'defaultTaskStartToCloseTimeout': u'50',
+            u'defaultTaskScheduleToStartTimeout': u'40',
             u'defaultTaskList': {
                 u'name': u'None'
             },
-            u'defaultTaskScheduleToCloseTimeout': u'0',
+            u'defaultTaskScheduleToCloseTimeout': u'60',
             u'defaultTaskHeartbeatTimeout': u'0'
         },
         u'typeInfo': {
@@ -69,6 +88,20 @@ Activity Type:
                 u'name': u'ActivityName.foo'
             }
         }
+    }
+
+Corresponding structure in simple-workflow / this project:
+
+    {
+        "task_schedule_to_start_timeout": 40,
+        "task_schedule_to_close_timeout": 60,
+        "task_start_to_close_timeout": 50,
+        "task_list": {"name": None}
+        "task_heartbeat_timeout": 0,
+        "status": "REGISTERED",
+        "creation_date": 1417521580.65,
+        "version": "2.0"
+        "name": "ActivityName.foo"
     }
 
 """
