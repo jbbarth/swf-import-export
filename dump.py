@@ -129,7 +129,11 @@ for domain in domain.DomainQuerySet(region=REGION).all():
     domain_result["workflows"] = []
     domain_result["activities"] = []
     #workflows
-    for workflow_type in domain.workflows():
+    try:
+        workflow_types = domain.workflows()
+    except:
+        workflow_types = []
+    for workflow_type in workflow_types:
         debug(workflow_type)
         domain_result["workflows"].append({
             "execution_timeout": workflow_type.execution_timeout,
@@ -142,7 +146,11 @@ for domain in domain.DomainQuerySet(region=REGION).all():
             "name": workflow_type.name,
         })
     #activities
-    for activity_type in domain.activities():
+    try:
+        activity_types = domain.activitys()
+    except:
+        activity_types = []
+    for activity_type in activity_types:
         debug(activity_type)
         domain_result["activities"].append({
             "task_schedule_to_start_timeout": activity_type.task_schedule_to_start_timeout,
