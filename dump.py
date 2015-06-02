@@ -4,7 +4,6 @@ import os
 import sys
 
 from swf.querysets import domain
-from boto.swf import regions
 import yaml
 
 """
