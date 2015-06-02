@@ -7,6 +7,67 @@ from boto.swf.layer1 import Layer1
 from boto.swf import regions
 import yaml
 
+"""
+Here are the typical structures of domains, workflow types and activity types,
+as returned by "describe_*" methods of the boto.swf API, represented as Python
+objects dumps.
+
+Domain:
+
+    {
+        u'domainInfo': {
+            u'status': u'REGISTERED',
+            u'name': u'TestDomain'
+        },
+        u'configuration': {
+            u'workflowExecutionRetentionPeriodInDays': u'30'
+        }
+    }
+
+Workflow Type:
+
+    {
+        u'configuration': {
+            u'defaultExecutionStartToCloseTimeout': u'3600',
+            u'defaultTaskStartToCloseTimeout': u'30',
+            u'defaultTaskList': {
+                u'name': u'test'
+            },
+            u'defaultChildPolicy': u'TERMINATE'
+        },
+        u'typeInfo': {
+            u'status': u'REGISTERED',
+            u'creationDate': 1389710910.635,
+            u'workflowType': {
+                u'version': u'1.0',
+                u'name': u'GreeterWorkflow.greet'
+            }
+        }
+    }
+
+Activity Type:
+
+    {
+        u'configuration': {
+            u'defaultTaskStartToCloseTimeout': u'0',
+            u'defaultTaskScheduleToStartTimeout': u'0',
+            u'defaultTaskList': {
+                u'name': u'None'
+            },
+            u'defaultTaskScheduleToCloseTimeout': u'0',
+            u'defaultTaskHeartbeatTimeout': u'0'
+        },
+        u'typeInfo': {
+            u'status': u'REGISTERED',
+            u'creationDate': 1417521580.65,
+            u'activityType': {
+                u'version': u'2.0',
+                u'name': u'ActivityName.foo'
+            }
+        }
+    }
+
+"""
 #parameters through environment
 STATUS = os.getenv("SWF_REGISTRATION_STATUS", "REGISTERED")
 REGION = os.getenv("SWF_REGION", "us-east-1")
