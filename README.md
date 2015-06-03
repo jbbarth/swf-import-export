@@ -15,7 +15,7 @@ The `dump.py` script allows you to dump domains in YAML format:
 It accepts the following parameters through environment variables
 
 |  Variable      |     Description                                                                              |
------------------------------------------------------------------------------------------------------------------
+|----------------|----------------------------------------------------------------------------------------------|
 | DEBUG          | If set (to "1" for instance), debug messages will be written to stderr.                      |
 | SWF_REGION     | The region you want to work on. Defaults to `boto.swf`'s default region, us-east-1.          |
 | SWF_DOMAIN     | A specific domain to retrieve. Defaults to "all domains in this region".                     |
