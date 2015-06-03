@@ -4,6 +4,17 @@ SWF Import / Export
 A simple tool to manage your SWF structures from different domains / environments.
 
 
+Install
+-------
+
+For now this project is only distributed as a source repo (no egg), so clone this repository,
+and install the dependencies with:
+
+    pip install -r requirements.txt
+
+(maybe in a virtualenv if you like to isolate things)
+
+
 Export domains: dump.py
 -----------------------
 
