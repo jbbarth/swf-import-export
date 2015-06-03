@@ -108,6 +108,7 @@ Corresponding structure in simple-workflow / this project:
 
 #parameters through environment
 REGION = os.getenv("SWF_REGION", "us-east-1")
+DOMAIN = os.getenv("SWF_DOMAIN", None)
 DEBUG = os.getenv("DEBUG", False)
 
 #utility functions
@@ -119,7 +120,12 @@ def debug(msg):
 #real work against SWF API
 result = []
 
-for domain in domain.DomainQuerySet(region=REGION).all():
+qs = domain.DomainQuerySet(region=REGION)
+if DOMAIN is None:
+    domains = qs.all()
+else:
+    domains = [qs.get(DOMAIN)]
+for domain in domains:
     debug(domain)
     domain_result = {
         "name": domain.name,
